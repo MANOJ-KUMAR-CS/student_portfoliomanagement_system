@@ -2,7 +2,8 @@ const mySqlConnection = require('./src/config/mySqlDb');
 const mongooseConnection = require('./src/config/mongoDb');
 
 const userRoutes = require('./src/routes/userRoutes');
-const portfolioRoutes =require('./src/routes/portfolioRoutes')
+const portfolioRoutes = require('./src/routes/studentRoutes');
+const adminRoutes = require('./src/routes/adminRoutes');
 
 const express = require('express');
 const cors = require('cors');
@@ -18,7 +19,8 @@ const PORT= process.env.PORT;
 
 
 app.use('/user', userRoutes);
-app.use('/portfolio', portfolioRoutes);
+app.use('/student', portfolioRoutes);
+app.use('/admin' , adminRoutes);
 
 app.listen(PORT , ()=>{
     

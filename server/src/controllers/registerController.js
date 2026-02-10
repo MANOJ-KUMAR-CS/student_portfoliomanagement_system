@@ -2,8 +2,8 @@ const db = require("../config/mySqlDb");
 const { securePassword } = require("../middleware/hasing");
 
 const userRegister =  (req, res) => {
-  const { userName, email, phoneNo, role, password } = req.body;
 
+ 
   const constriants = {
     userName: "Name is missing",
     email: "Email is missing",
@@ -18,6 +18,12 @@ const userRegister =  (req, res) => {
       return res.status(400).json({ message: constriants[key] });
     }
   }
+
+   //change name to lowercase
+  req.body.userName =req.body.userName.toLowerCase();
+
+  const { userName, email, phoneNo, role, password } = req.body;
+
 
   //Verify the given constriants are valid
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -37,6 +43,8 @@ const userRegister =  (req, res) => {
     return res.status(400).json({message : "Password must be at least 4 characters long"});
   }
 
+  //change name to lowercase
+
   const query_1 = "SELECT * FROM users WHERE email = ?";
 
   //query execution for verify duplicate entry  
@@ -48,6 +56,7 @@ const userRegister =  (req, res) => {
       return res.status(400).json({ message: "Email id already exist" });
     }
     try {
+      //hash password
       const hashedPassword = await securePassword(password);
 
       const query =
@@ -65,11 +74,14 @@ const userRegister =  (req, res) => {
           return res.status(400).json({ message: "Unable add new user" });
         }
 
+        //return if user registered 
         return res
           .status(200)
           .json({ message: "New user Registered successfully" });
       });
-    } catch (err) {
+    } 
+    // catch if any error occured
+    catch (err) {
         return res.status(400).json({message : "Error occured in hasing password"})
     }
   });

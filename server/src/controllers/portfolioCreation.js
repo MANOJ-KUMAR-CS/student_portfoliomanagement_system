@@ -13,16 +13,20 @@ const createPortfolio = async (req, res) => {
       return res.status(400).json({ message: "No data provided! " });
     }
 
+    //create a user object
     const studentDetails = new User(req.body);
 
+    // add user to database
     const saveUser = await studentDetails.save();
 
+    // return user details and message
     return res.status(200).json({
       message: "Portfolio created successfully",
       data: saveUser,
     });
   } 
-  
+
+  // catch if any error occured
   catch (err) {
     return res.status(400).json({
         message : "Validation Error",

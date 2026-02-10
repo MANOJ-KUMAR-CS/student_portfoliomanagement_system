@@ -4,8 +4,8 @@ const userSchema = new mongoose.Schema({
   st_id: { type: Number, required: true, unique: true },
 
   header: {
-    name: { type: String, required: true },
-    email: { type: String, required: true },
+    name: { type: String ,required: true },
+    email: { type: String , required: true },
     phone_no: { type: String, required: true },
     dept: { type: String, required: true },
     year: { type: String, required: true },
@@ -18,10 +18,10 @@ const userSchema = new mongoose.Schema({
   objective: { type: String, required: true },
 
   academic: {
-    cgpa: { type: Number, required: true },
+    cgpa: { type: Number, max:10 , required: true },
     sgpas: { type: [Number], required: true }, 
-    tenth_percentage: { type: Number, required: true },
-    twelfth_percentage: { type: Number, required: true }
+    tenth_percentage: { type: Number, max:100, required: true },
+    twelfth_percentage: { type: Number, max:100 , required: true }
   },
 
   skills: { type: [String], required: true },
