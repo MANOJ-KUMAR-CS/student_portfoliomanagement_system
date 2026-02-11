@@ -6,7 +6,6 @@ const verifyResetToken = () => {
                 message: "Access denied: OTP verification required" 
             });
         }
-        
         next();
     };
 };
