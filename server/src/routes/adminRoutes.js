@@ -1,6 +1,6 @@
 const express = require('express');
 const {searchStudent} = require('../controllers/adminSearch');
-const { portfolioDetails } = require('../controllers/portoflioDetails');
+const { portfolioDetails } = require('../controllers/portfolioDetails');
 const authorization = require('../middleware/authorization');
 const verifyToken = require('../middleware/verifyToken');
 

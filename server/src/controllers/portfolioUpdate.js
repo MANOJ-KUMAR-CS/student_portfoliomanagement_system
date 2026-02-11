@@ -3,8 +3,8 @@ const User = require('../models/userSchema');
 const updatePortfolio = async (req, res) => {
     try {
     
-        // verify the user's id is match with token
-        if (req.user.id != req.params.id) {
+        // verify the user's id matches with token
+        if (req.user.id !== req.params.id) {
             return res.status(403).json({ 
                 message: "Access denied! You can't access another user's portfolio" 
             });
@@ -14,6 +14,9 @@ const updatePortfolio = async (req, res) => {
         if (!req.body || Object.keys(req.body).length === 0) {
             return res.status(400).json({ message: "Details are necessary for updating" });
         }
+
+        // prevent updating the student id itself
+        delete req.body.st_id;
 
         // update query
         const updatedDetails = await User.findOneAndUpdate(
@@ -34,7 +37,7 @@ const updatePortfolio = async (req, res) => {
         });
     }
     
-    // catch if any error occured
+    // catch if any error occurred
     catch (err) {
         return res.status(500).json({ 
             message: "Internal server error", 

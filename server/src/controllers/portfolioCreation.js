@@ -4,13 +4,13 @@ const createPortfolio = async (req, res) => {
   try {
 
     // User id validation
-    if(req.user.id != req.params.id || req.user.id !=req.body.st_id){
-      return res.status(403).json({message : "Access denied you can't access others portfolio"});
+    if (req.user.id !== req.body.st_id) {
+      return res.status(403).json({ message: "Access denied you can't access others portfolio" });
     }
 
     // check for data
     if (!req.body || Object.keys(req.body).length === 0) {
-      return res.status(400).json({ message: "No data provided! " });
+      return res.status(400).json({ message: "No data provided!" });
     }
 
     //create a user object
@@ -26,12 +26,13 @@ const createPortfolio = async (req, res) => {
     });
   } 
 
-  // catch if any error occured
+  // catch if any error occurred
   catch (err) {
-    return res.status(400).json({
-        message : "Validation Error",
-        error : err.message
+    return res.status(500).json({
+        message: "Internal Server Error",
+        error: err.message
     })
   }
 };
-module.exports = {createPortfolio};
+
+module.exports = { createPortfolio };

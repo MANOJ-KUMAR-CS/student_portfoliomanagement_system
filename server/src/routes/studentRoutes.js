@@ -9,8 +9,10 @@ const { updatePortfolio } = require('../controllers/portfolioUpdate');
 const verifyToken = require('../middleware/verifyToken');
 const authorization = require('../middleware/authorization');
 
-routes.post('/createportfolio/:id', verifyToken  , authorization('student') ,createPortfolio);
-routes.get('/findportfolio/:id' , verifyToken , authorization('student') , getDetails);
-routes.put('/updateportfolio/:id' , verifyToken , authorization('student') , updatePortfolio);
+routes.use(verifyToken, authorization('student'));
+
+routes.post('/createportfolio/:id', createPortfolio);
+routes.get('/findportfolio/:id', getDetails);
+routes.put('/updateportfolio/:id', updatePortfolio);
 
 module.exports = routes;

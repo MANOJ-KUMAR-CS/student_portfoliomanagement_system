@@ -1,10 +1,15 @@
-const authorization = (role) => {
-    return (req , res , next) => {
-        if(req.user.role !== role) {
-            return res.status(401).json({message : `Access denied only ${role} can access`});
-        };
+const authorization = (roles) => {
+    return (req, res, next) => {
+        
+        // ensure user exists and role is authorized
+        if (!req.user || !roles.includes(req.user.role)) {
+            return res.status(403).json({ 
+                message: `Access denied! Authorized roles: ${roles}` 
+            });
+        }
+        
+        // move to next middleware
         next();
-
     };
 };
 
