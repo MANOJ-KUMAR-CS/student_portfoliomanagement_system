@@ -1,5 +1,5 @@
 const db = require('../config/mySqlDb');
-const isValidEmail = require("../../validator/emailValidator");
+const isValidEmail = require("../validator/emailValidator");
 const { securePassword } = require('../middleware/hasing');
 
 const resetPassword = async (req, res) => {

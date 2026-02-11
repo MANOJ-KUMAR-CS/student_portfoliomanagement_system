@@ -1,4 +1,4 @@
-const isValidEmail = require("../../validator/emailValidator");
+const isValidEmail = require("../validator/emailValidator");
 const db = require("../config/mySqlDb");
 const bcrypt = require("bcrypt");
 const generateToken = require("../jwt/generateToken");

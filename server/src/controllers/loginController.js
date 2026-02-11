@@ -1,7 +1,7 @@
 const db = require("../config/mySqlDb");
 const bcrypt = require("bcrypt");
 const generateToken = require("../jwt/generateToken");
-const isValidEmail = require("../../validator/emailValidator");
+const isValidEmail = require("../validator/emailValidator");
 
 const userLogin = (req, res) => {
   const { email, password } = req.body;

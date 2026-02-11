@@ -1,4 +1,4 @@
-const isValidEmail = require("../../validator/emailValidator");
+const isValidEmail = require("../validator/emailValidator");
 const db = require("../config/mySqlDb");
 const { securePassword } = require("../middleware/hasing");
 

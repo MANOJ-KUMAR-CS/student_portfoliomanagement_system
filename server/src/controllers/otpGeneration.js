@@ -2,7 +2,7 @@ const db = require('../config/mySqlDb');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const sendEmail  = require('../services/sendEmail');
-const isValidEmail = require('../../validator/emailValidator');
+const isValidEmail = require('../validator/emailValidator');
 
 const generateOtp = async (req, res) => {
     const { email } = req.body;
