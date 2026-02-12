@@ -14,7 +14,7 @@ const verifyResetToken = require('../middleware/verifyResetToken');
 
 
 routes.post('/login' , userLogin);
-routes.post('/register', verifyToken ,authorization('admin'), userRegister);
+routes.post('/register',  userRegister);
 routes.post('/generateopt' , generateOtp);
 routes.post('/verifyotp', verifyOtp );
 routes.post('/resetpassword' , verifyToken , verifyResetToken() ,  resetPassword)

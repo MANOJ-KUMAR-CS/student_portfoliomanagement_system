@@ -1,0 +1,148 @@
+/* Alert Container */
+.alert-container {
+  position: fixed;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  transition: top 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  min-width: 400px;
+  max-width: 90%;
+}
+
+.alert-container.show {
+  top: 20px;
+}
+
+/* Alert Box - Modern Neutral Design */
+.alert-box {
+  padding: 18px 24px;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12),
+              0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  animation: slideDown 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  border-left: 4px solid transparent;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Success Alert - Green Text */
+.alert-box.success {
+  border-left-color: #10b981;
+}
+
+.alert-box.success .alert-icon {
+  color: #10b981;
+}
+
+.alert-box.success .alert-message {
+  color: #059669;
+}
+
+.alert-box.success .alert-close {
+  color: #6b7280;
+}
+
+.alert-box.success .alert-close:hover {
+  background: #f0fdf4;
+  color: #059669;
+}
+
+/* Error Alert - Red Text */
+.alert-box.error {
+  border-left-color: #ef4444;
+}
+
+.alert-box.error .alert-icon {
+  color: #ef4444;
+}
+
+.alert-box.error .alert-message {
+  color: #dc2626;
+}
+
+.alert-box.error .alert-close {
+  color: #6b7280;
+}
+
+.alert-box.error .alert-close:hover {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+/* Alert Icon */
+.alert-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.alert-box:hover .alert-icon {
+  transform: scale(1.1);
+}
+
+/* Alert Message */
+.alert-message {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* Alert Close Button */
+.alert-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.alert-close:hover {
+  transform: scale(1.1);
+}
+
+.alert-close:active {
+  transform: scale(0.95);
+}
+
+/* Responsive Design */
+@media (max-width: 500px) {
+  .alert-container {
+    min-width: 90%;
+    max-width: 95%;
+  }
+
+  .alert-box {
+    padding: 16px 20px;
+  }
+
+  .alert-message {
+    font-size: 14px;
+  }
+
+  .alert-icon {
+    font-size: 20px;
+  }
+}

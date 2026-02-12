@@ -3,7 +3,7 @@ const User = require('../models/userSchema');
 const getDetails = async (req, res) => {
   try {
     //verify the user's id matches with token
-    if (req.user.id !== req.params.id) {
+    if (req.user.id != req.params.id) {
       return res
         .status(403)
         .json({ message: "Access denied! You can't access another user's portfolio" });
