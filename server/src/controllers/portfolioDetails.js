@@ -3,12 +3,12 @@ const User = require('../models/userSchema');
 const portfolioDetails = async (req, res) => {
   try {
     //check for id
-    if (!req.body.id) {
+    if (!req.query.id) {
         return res.status(400).json({ message: "No student id provided" });
     }
 
     //find the specific user
-    const userData = await User.findOne({ st_id: req.body.id });
+    const userData = await User.findOne({ st_id: req.query.id });
 
     //verify if user is found or not
     if (!userData) {

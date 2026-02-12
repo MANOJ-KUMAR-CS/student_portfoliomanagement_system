@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../api/axios";
 import { useNavigate, Link } from "react-router-dom";
 import Alert from "../components/Alert";
 import "../styles/Login.css";
@@ -31,7 +31,7 @@ const LoginPage = () => {
 
     try {
       // 1. Authenticate User
-      const response = await axios.post("http://localhost:5000/user/login", {
+      const response = await api.post("/user/login", {
         email,
         password,
       });
@@ -50,10 +50,9 @@ const LoginPage = () => {
 
         // 3. Route Student/User based on Portfolio existence
         try {
-          // Change userdata.id to userdata._id if that is what your DB uses
-          const portfolioRes = await axios.get(
-            `http://localhost:5000/student/findportfolio/${userdata._id || userdata.id}`,
-            { headers: { Authorization: `Bearer ${token}` } },
+          // Use userdata.id (from MySQL)
+          const portfolioRes = await api.get(
+            `/student/findportfolio/${userdata.id}`
           );
 
           if (portfolioRes.status === 200) {
@@ -62,7 +61,6 @@ const LoginPage = () => {
               JSON.stringify(portfolioRes.data.data),
             );
             showAlert("Welcome back!", "success");
-            console.log(portfolioRes.data.data);
             setTimeout(() => navigate("/dashboard"), 1500);
           }
         } catch (err) {

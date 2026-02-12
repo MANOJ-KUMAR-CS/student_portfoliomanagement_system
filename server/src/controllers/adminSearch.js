@@ -1,7 +1,7 @@
 const db = require('../config/mySqlDb');
 
 const searchStudent = async (req, res) => {
-    let { name } = req.body;
+    let { name } = req.query;
 
     // Verify name exists 
     if (!name) {

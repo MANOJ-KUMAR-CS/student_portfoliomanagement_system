@@ -1,81 +1,197 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import api from '../api/axios';
 import Alert from '../components/Alert';
-import '../styles/PortfolioForm.css'; // Reusing your modern styles
+import { useNavigate } from 'react-router-dom';
+import '../styles/PortfolioForm.css'; 
 
 const PortfolioForm = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [alertConfig, setAlertConfig] = useState({ show: false, message: '', type: 'success' });
+  const [isEditing, setIsEditing] = useState(false);
 
-  // Initialize state based on your Mongoose Schema
+  // Initial State
   const [formData, setFormData] = useState({
     st_id: JSON.parse(localStorage.getItem('user'))?.id || '',
     header: { name: '', email: '', phone_no: '', dept: '', year: '', sem: '', git_link: '', linkedin_link: '', leetcode_link: '' },
     objective: '',
-    academic: { cgpa: '', sgpas: '', tenth_percentage: '', twelfth_percentage: '' },
-    skills: '',
-    projects: [{ title: '', tech_stack: '', description: '' }],
-    certifications: '',
-    achievements: '',
-    hobbies: ''
+    academic: { cgpa: '', sgpas: [], tenth_percentage: '', twelfth_percentage: '' },
+    skills: [],
+    projects: [{ title: '', tech_stack: [], description: '' }],
+    certifications: [],
+    achievements: [],
+    hobbies: []
   });
 
-  const showAlert = (message, type) => setAlertConfig({ show: true, message, type });
+  // Temporary state for inputs
+  const [tempInputs, setTempInputs] = useState({
+    skills: '',
+    certifications: '',
+    achievements: '',
+    hobbies: '',
+    sgpa: '',
+    project_tech: [] // Array of strings for each project index
+  });
 
-  // Handle nested object changes
+  useEffect(() => {
+    const fetchData = async () => {
+       const user = JSON.parse(localStorage.getItem('user'));
+       const existingData = JSON.parse(localStorage.getItem('portfolio_data'));
+
+       // Pre-fill Name and Email from User Login Data
+       if (user) {
+         setFormData(prev => ({
+            ...prev,
+            st_id: user.id || user.st_id,
+            header: {
+                ...prev.header,
+                // Check multiple keys for robustness (userName, username, name)
+                name: user.userName || user.username || user.name || '',
+                email: user.email || ''
+            }
+         }));
+       }
+
+       if (existingData) {
+         setIsEditing(true);
+         setFormData(prev => ({
+            ...existingData,
+            // Ensure we keep the locked values from user login if they are missing or to enforce consistency
+            header: {
+                ...existingData.header,
+                name: user?.userName || user?.username || user?.name || existingData.header.name || '',
+                email: user?.email || existingData.header.email || ''
+            },
+            skills: Array.isArray(existingData.skills) ? existingData.skills : (existingData.skills || '').split(','),
+            certifications: Array.isArray(existingData.certifications) ? existingData.certifications : (existingData.certifications || '').split(','),
+            achievements: Array.isArray(existingData.achievements) ? existingData.achievements : (existingData.achievements || '').split(','),
+            hobbies: Array.isArray(existingData.hobbies) ? existingData.hobbies : (existingData.hobbies || '').split(','),
+            projects: existingData.projects.map(p => ({
+                ...p,
+                tech_stack: Array.isArray(p.tech_stack) ? p.tech_stack : (p.tech_stack || '').split(',').map(s=>s.trim())
+            })),
+            academic: {
+                ...existingData.academic,
+                sgpas: Array.isArray(existingData.academic.sgpas) ? existingData.academic.sgpas : (typeof existingData.academic.sgpas === 'string' ? existingData.academic.sgpas.split(',').map(Number) : [])
+            }
+         }));
+         // Initialize temp tech inputs for projects
+         setTempInputs(prev => ({
+             ...prev,
+             project_tech: new Array(existingData.projects.length).fill('')
+         }));
+       } else {
+         setTempInputs(prev => ({ ...prev, project_tech: [''] }));
+       }
+    };
+    fetchData();
+  }, []);
+
   const handleNestedChange = (e, section) => {
-    setFormData({
-      ...formData,
-      [section]: { ...formData[section], [e.target.name]: e.target.value }
-    });
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [section]: { ...prev[section], [name]: value }
+    }));
   };
 
-  // Handle Project Array changes
+  // Dynamic Array Handlers
+  const handleAddItem = (field, value) => {
+    if (!value.trim()) return;
+    
+    setFormData(prev => ({
+      ...prev,
+      [field]: [...prev[field], value]
+    }));
+    setTempInputs(prev => ({ ...prev, [field]: '' })); // Clear input
+  };
+
+  const handleRemoveItem = (field, index) => {
+      setFormData(prev => ({
+          ...prev,
+          [field]: prev[field].filter((_, i) => i !== index)
+      }));
+  };
+  
+  // SGPA Handler
+  const handleAddSgpa = () => {
+      if (!tempInputs.sgpa.trim()) return;
+      if (formData.academic.sgpas.length >= 8) {
+          setAlertConfig({ show: true, message: 'Maximum 8 SGPAs allowed', type: 'error' });
+          return;
+      }
+      setFormData(prev => ({
+          ...prev,
+          academic: { ...prev.academic, sgpas: [...prev.academic.sgpas, parseFloat(tempInputs.sgpa)] }
+      }));
+      setTempInputs(prev => ({ ...prev, sgpa: '' }));
+  };
+
+  const handleRemoveSgpa = (index) => {
+      setFormData(prev => ({
+          ...prev,
+          academic: { ...prev.academic, sgpas: prev.academic.sgpas.filter((_, i) => i !== index) }
+      }));
+  };
+
+  // Project Handlers
   const handleProjectChange = (index, e) => {
-    const newProjects = [...formData.projects];
-    newProjects[index][e.target.name] = e.target.value;
-    setFormData({ ...formData, projects: newProjects });
+    const { name, value } = e.target;
+    const updatedProjects = [...formData.projects];
+    updatedProjects[index] = { ...updatedProjects[index], [name]: value };
+    setFormData({ ...formData, projects: updatedProjects });
   };
 
   const addProject = () => {
-    setFormData({ ...formData, projects: [...formData.projects, { title: '', tech_stack: '', description: '' }] });
+    setFormData({ ...formData, projects: [...formData.projects, { title: '', tech_stack: [], description: '' }] });
+    setTempInputs(prev => ({ ...prev, project_tech: [...prev.project_tech, ''] }));
+  };
+
+  const removeProject = (index) => {
+    const updatedProjects = formData.projects.filter((_, i) => i !== index);
+    setFormData({ ...formData, projects: updatedProjects });
+    setTempInputs(prev => ({ ...prev, project_tech: prev.project_tech.filter((_, i) => i !== index) }));
+  };
+
+  // Project Tech Stack Handlers
+  const handleAddProjectTech = (index) => {
+      const val = tempInputs.project_tech[index];
+      if (!val || !val.trim()) return;
+
+      const updatedProjects = [...formData.projects];
+      updatedProjects[index].tech_stack = [...updatedProjects[index].tech_stack, val.trim()];
+      setFormData({ ...formData, projects: updatedProjects });
+      
+      const newTechInputs = [...tempInputs.project_tech];
+      newTechInputs[index] = '';
+      setTempInputs({ ...tempInputs, project_tech: newTechInputs });
+  };
+
+  const handleRemoveProjectTech = (pIndex, tIndex) => {
+      const updatedProjects = [...formData.projects];
+      updatedProjects[pIndex].tech_stack = updatedProjects[pIndex].tech_stack.filter((_, i) => i !== tIndex);
+      setFormData({ ...formData, projects: updatedProjects });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
-    // Prepare data (convert comma strings to arrays)
-    const finalData = {
-      ...formData,
-      academic: {
-        ...formData.academic,
-        sgpas: formData.academic.sgpas.split(',').map(Number)
-      },
-      skills: formData.skills.split(','),
-      certifications: formData.certifications.split(','),
-      achievements: formData.achievements.split(','),
-      hobbies: formData.hobbies.split(','),
-      projects: formData.projects.map(p => ({
-        ...p,
-        tech_stack: p.tech_stack.split(',')
-      }))
-    };
-
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:5000/api/portfolio', finalData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      // Store in LocalStorage
-      localStorage.setItem('portfolio_data', JSON.stringify(response.data.data));
-      showAlert('Portfolio Created Successfully!', 'success');
+      const url = isEditing 
+        ? `/student/updateportfolio/${formData.st_id}`
+        : `/student/createportfolio/${formData.st_id}`;
       
-      // Redirect to Dashboard
-      setTimeout(() => window.location.href = '/dashboard', 2000);
-    } catch (err) {
-      showAlert(err.response?.data?.message || 'Error creating portfolio', 'error');
+      const method = isEditing ? 'put' : 'post';
+      
+      const response = await api[method](url, formData);
+
+      if (response.status === 200 || response.status === 201) {
+        localStorage.setItem('portfolio_data', JSON.stringify(formData));
+        setAlertConfig({ show: true, message: 'Portfolio Saved Successfully!', type: 'success' });
+        setTimeout(() => navigate('/dashboard'), 1500);
+      }
+    } catch (error) {
+      setAlertConfig({ show: true, message: error.response?.data?.message || 'Failed to save portfolio', type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -85,66 +201,203 @@ const PortfolioForm = () => {
     <div className="dashboard-container">
       {alertConfig.show && <Alert message={alertConfig.message} type={alertConfig.type} onClose={() => setAlertConfig({ ...alertConfig, show: false })} />}
       
-      <form onSubmit={handleSubmit} className="login-card" style={{ maxWidth: '800px' }}>
-        <h2 style={{ marginBottom: '20px' }}>Student Details Form</h2>
-
+      <form onSubmit={handleSubmit} className="glass-panel portfolio-form-card">
+        <div className="form-header">
+             <h2>{isEditing ? 'Edit Portfolio' : 'Create Portfolio'}</h2>
+             <button type="button" className="btn-cancel" onClick={() => navigate(isEditing ? '/dashboard' : '/login')}>Cancel</button>
+        </div>
         {/* Header Section */}
         <div className="form-section">
-          <h3>Personal Header</h3>
+          <h3>👤 Personal Details</h3>
           <div className="dashboard-grid">
-            <input name="name" placeholder="Full Name" onChange={(e) => handleNestedChange(e, 'header')} required />
-            <input name="email" placeholder="Email" onChange={(e) => handleNestedChange(e, 'header')} required />
-            <input name="phone_no" placeholder="Phone Number" onChange={(e) => handleNestedChange(e, 'header')} required />
-            <input name="dept" placeholder="Department (e.g. ECE)" onChange={(e) => handleNestedChange(e, 'header')} required />
-            <input name="year" placeholder="Year" onChange={(e) => handleNestedChange(e, 'header')} required />
-            <input name="sem" placeholder="Semester" onChange={(e) => handleNestedChange(e, 'header')} required />
-            <input name="git_link" placeholder="GitHub Link" onChange={(e) => handleNestedChange(e, 'header')} required />
-            <input name="linkedin_link" placeholder="LinkedIn Link" onChange={(e) => handleNestedChange(e, 'header')} required />
-            <input name="leetcode_link" placeholder="LeetCode Link" onChange={(e) => handleNestedChange(e, 'header')} required />
+            <div className="input-group">
+                <label>👤 Full Name</label>
+                <input className="input-field readonly-field" name="name" placeholder="Full Name" value={formData.header.name} readOnly disabled />
+            </div>
+            <div className="input-group">
+                <label>📧 User Email</label>
+                <input className="input-field readonly-field" name="email" placeholder="User Email" value={formData.header.email} readOnly disabled />
+            </div>
+            <div className="input-group">
+                <label>📞 Phone Number</label>
+                <input className="input-field" name="phone_no" placeholder="Enter Phone No." value={formData.header.phone_no} onChange={(e) => handleNestedChange(e, 'header')} required />
+            </div>
+            <div className="input-group">
+                <label>🏫 Department</label>
+                <input className="input-field" name="dept" placeholder="e.g. ECE, CSE" value={formData.header.dept} onChange={(e) => handleNestedChange(e, 'header')} required />
+            </div>
+            <div className="input-group">
+                <label>📅 Year</label>
+                <input className="input-field" name="year" placeholder="e.g. 3rd" value={formData.header.year} onChange={(e) => handleNestedChange(e, 'header')} required />
+            </div>
+            <div className="input-group">
+                <label>📚 Semester</label>
+                <input className="input-field" name="sem" placeholder="e.g. 5th" value={formData.header.sem} onChange={(e) => handleNestedChange(e, 'header')} required />
+            </div>
+            <div className="input-group">
+                <label>🐙 GitHub Link</label>
+                <input className="input-field" name="git_link" placeholder="GitHub URL" value={formData.header.git_link} onChange={(e) => handleNestedChange(e, 'header')} />
+            </div>
+            <div className="input-group">
+                <label>💼 LinkedIn Link</label>
+                <input className="input-field" name="linkedin_link" placeholder="LinkedIn URL" value={formData.header.linkedin_link} onChange={(e) => handleNestedChange(e, 'header')} />
+            </div>
+            <div className="input-group">
+                <label>💻 LeetCode Link</label>
+                <input className="input-field" name="leetcode_link" placeholder="LeetCode URL" value={formData.header.leetcode_link} onChange={(e) => handleNestedChange(e, 'header')} />
+            </div>
           </div>
         </div>
 
         {/* Objective Section */}
-        <div className="form-section" style={{ marginTop: '20px' }}>
-          <h3>Career Objective</h3>
-          <textarea style={{ width: '100%', padding: '10px' }} onChange={(e) => setFormData({...formData, objective: e.target.value})} required />
+        <div className="form-section">
+          <h3>🎯 Career Objective</h3>
+          <textarea className="input-field textarea-field" placeholder="Write a brief objective summarizing your career goals..." value={formData.objective} onChange={(e) => setFormData({...formData, objective: e.target.value})} required />
         </div>
 
         {/* Academics Section */}
-        <div className="form-section" style={{ marginTop: '20px' }}>
-          <h3>Academic Details</h3>
+        <div className="form-section">
+          <h3>🎓 Academic Details</h3>
           <div className="dashboard-grid">
-            <input name="cgpa" type="number" step="0.01" placeholder="CGPA" onChange={(e) => handleNestedChange(e, 'academic')} required />
-            <input name="sgpas" placeholder="SGPAs (comma separated: 8.5, 9.0)" onChange={(e) => handleNestedChange(e, 'academic')} required />
-            <input name="tenth_percentage" type="number" placeholder="10th %" onChange={(e) => handleNestedChange(e, 'academic')} required />
-            <input name="twelfth_percentage" type="number" placeholder="12th %" onChange={(e) => handleNestedChange(e, 'academic')} required />
+            <div className="input-group">
+                <label>📊 CGPA</label>
+                <input className="input-field" name="cgpa" type="number" step="0.01" placeholder="Current CGPA" value={formData.academic.cgpa} onChange={(e) => handleNestedChange(e, 'academic')} required />
+            </div>
+            
+            <div className="input-group">
+                <label>🏫 10th Percentage</label>
+                <input className="input-field" name="tenth_percentage" type="number" placeholder="10th %" value={formData.academic.tenth_percentage} onChange={(e) => handleNestedChange(e, 'academic')} required />
+            </div>
+            <div className="input-group">
+                <label>🏫 12th Percentage</label>
+                <input className="input-field" name="twelfth_percentage" type="number" placeholder="12th %" value={formData.academic.twelfth_percentage} onChange={(e) => handleNestedChange(e, 'academic')} required />
+            </div>
+
+            {/* Dynamic SGPAs - Full Width or Grid Item */}
+            <div className="tag-input-container" style={{gridColumn: '1 / -1'}}>
+                 <label>📈 Semester SGPAs (Max 8)</label>
+                 <div className="tags-list">
+                     {formData.academic.sgpas.map((sgpa, i) => (
+                         <span key={i} className="tag-item">
+                             Sem {i+1}: {sgpa} <span className="tag-remove" onClick={() => handleRemoveSgpa(i)}>×</span>
+                         </span>
+                     ))}
+                 </div>
+                 <div className="tag-input-wrapper">
+                     <input className="input-field" type="number" step="0.01" placeholder="Enter SGPA..." value={tempInputs.sgpa} onChange={(e) => setTempInputs({...tempInputs, sgpa: e.target.value})} 
+                         onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSgpa())} />
+                     <button type="button" className="btn-add-tag" onClick={handleAddSgpa}>+</button>
+                 </div>
+            </div>
           </div>
         </div>
 
-        {/* Arrays Section */}
-        <div className="form-section" style={{ marginTop: '20px' }}>
-          <h3>Skills & Achievements (Comma Separated)</h3>
-          <input placeholder="Skills (Java, React, C)" onChange={(e) => setFormData({...formData, skills: e.target.value})} required />
-          <input placeholder="Certifications" onChange={(e) => setFormData({...formData, certifications: e.target.value})} required />
-          <input placeholder="Achievements" onChange={(e) => setFormData({...formData, achievements: e.target.value})} required />
-          <input placeholder="Hobbies" onChange={(e) => setFormData({...formData, hobbies: e.target.value})} required />
+        {/* Arrays Section - Now Dynamic */}
+        <div className="form-section">
+          <h3>🛠 Skills & Achievements</h3>
+          <div className="dashboard-grid">
+             
+             {/* Skills */}
+             <div className="tag-input-container">
+                 <label>⚡ Skills</label>
+                 <div className="tags-list">
+                     {formData.skills.map((item, i) => (
+                         <span key={i} className="tag-item">{item} <span className="tag-remove" onClick={() => handleRemoveItem('skills', i)}>×</span></span>
+                     ))}
+                 </div>
+                 <div className="tag-input-wrapper">
+                     <input className="input-field" placeholder="Add Skill... (Press Enter)" value={tempInputs.skills} onChange={(e) => setTempInputs({...tempInputs, skills: e.target.value})} 
+                         onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddItem('skills', tempInputs.skills))} />
+                     <button type="button" className="btn-add-tag" onClick={() => handleAddItem('skills', tempInputs.skills)}>+</button>
+                 </div>
+             </div>
+
+             {/* Certifications */}
+             <div className="tag-input-container">
+                 <label>📜 Certifications</label>
+                 <div className="tags-list">
+                     {formData.certifications.map((item, i) => (
+                         <span key={i} className="tag-item">{item} <span className="tag-remove" onClick={() => handleRemoveItem('certifications', i)}>×</span></span>
+                     ))}
+                 </div>
+                 <div className="tag-input-wrapper">
+                     <input className="input-field" placeholder="Add Certification..." value={tempInputs.certifications} onChange={(e) => setTempInputs({...tempInputs, certifications: e.target.value})} 
+                         onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddItem('certifications', tempInputs.certifications))} />
+                     <button type="button" className="btn-add-tag" onClick={() => handleAddItem('certifications', tempInputs.certifications)}>+</button>
+                 </div>
+             </div>
+
+             {/* Achievements */}
+             <div className="tag-input-container">
+                 <label>🏆 Achievements</label>
+                 <div className="tags-list">
+                     {formData.achievements.map((item, i) => (
+                         <span key={i} className="tag-item">{item} <span className="tag-remove" onClick={() => handleRemoveItem('achievements', i)}>×</span></span>
+                     ))}
+                 </div>
+                 <div className="tag-input-wrapper">
+                     <input className="input-field" placeholder="Add Achievement..." value={tempInputs.achievements} onChange={(e) => setTempInputs({...tempInputs, achievements: e.target.value})} 
+                         onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddItem('achievements', tempInputs.achievements))} />
+                     <button type="button" className="btn-add-tag" onClick={() => handleAddItem('achievements', tempInputs.achievements)}>+</button>
+                 </div>
+             </div>
+
+             {/* Hobbies */}
+             <div className="tag-input-container">
+                 <label>🎨 Hobbies</label>
+                 <div className="tags-list">
+                     {formData.hobbies.map((item, i) => (
+                         <span key={i} className="tag-item">{item} <span className="tag-remove" onClick={() => handleRemoveItem('hobbies', i)}>×</span></span>
+                     ))}
+                 </div>
+                 <div className="tag-input-wrapper">
+                     <input className="input-field" placeholder="Add Hobby..." value={tempInputs.hobbies} onChange={(e) => setTempInputs({...tempInputs, hobbies: e.target.value})} 
+                         onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddItem('hobbies', tempInputs.hobbies))} />
+                     <button type="button" className="btn-add-tag" onClick={() => handleAddItem('hobbies', tempInputs.hobbies)}>+</button>
+                 </div>
+             </div>
+
+          </div>
         </div>
 
         {/* Projects Section */}
-        <div className="form-section" style={{ marginTop: '20px' }}>
-          <h3>Projects</h3>
+        <div className="form-section">
+          <h3>🚀 Projects</h3>
           {formData.projects.map((proj, index) => (
-            <div key={index} style={{ borderBottom: '1px solid #ccc', padding: '10px 0' }}>
-              <input name="title" placeholder="Project Title" onChange={(e) => handleProjectChange(index, e)} required />
-              <input name="tech_stack" placeholder="Tech Stack (comma separated)" onChange={(e) => handleProjectChange(index, e)} required />
-              <textarea name="description" placeholder="Description" style={{ width: '100%' }} onChange={(e) => handleProjectChange(index, e)} required />
+            <div key={index} className="glass-panel project-item">
+              <div className="project-header">
+                  <h4>Project {index + 1}</h4>
+                  {formData.projects.length > 1 && <button type="button" onClick={() => removeProject(index)} className="btn-remove">Remove</button>}
+              </div>
+              <input className="input-field mb-small" name="title" placeholder="Project Title" value={proj.title} onChange={(e) => handleProjectChange(index, e)} required />
+              
+              {/* Project Tech Stack Dynamic */}
+              <div className="tag-input-container mb-small">
+                 <div className="tags-list">
+                     {proj.tech_stack.map((tech, tIndex) => (
+                         <span key={tIndex} className="tag-item">{tech} <span className="tag-remove" onClick={() => handleRemoveProjectTech(index, tIndex)}>×</span></span>
+                     ))}
+                 </div>
+                 <div className="tag-input-wrapper">
+                     <input className="input-field" placeholder="Add Tech Stack..." value={tempInputs.project_tech[index] || ''} 
+                            onChange={(e) => {
+                                const newTech = [...tempInputs.project_tech];
+                                newTech[index] = e.target.value;
+                                setTempInputs({...tempInputs, project_tech: newTech});
+                            }} 
+                            onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddProjectTech(index))} />
+                     <button type="button" className="btn-add-tag" onClick={() => handleAddProjectTech(index)}>+</button>
+                 </div>
+              </div>
+
+              <textarea className="input-field textarea-field" name="description" placeholder="Description" value={proj.description} onChange={(e) => handleProjectChange(index, e)} required />
             </div>
           ))}
-          <button type="button" onClick={addProject} className="btn-google" style={{ marginTop: '10px' }}>+ Add Project</button>
+          <button type="button" onClick={addProject} className="btn-add-project">+ Add Project</button>
         </div>
 
-        <button type="submit" className="btn-primary" style={{ marginTop: '30px' }} disabled={loading}>
-          {loading ? 'Creating Portfolio...' : 'Save Portfolio Details'}
+        <button type="submit" className="btn-primary btn-submit" disabled={loading}>
+          {loading ? 'Saving...' : (isEditing ? 'Update Portfolio' : 'Create Portfolio')}
         </button>
       </form>
     </div>
