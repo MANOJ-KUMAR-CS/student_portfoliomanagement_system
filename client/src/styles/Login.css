@@ -1,103 +1,131 @@
-/* ====== Google Font ====== */
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+/* ==================================
+   LOGIN PAGE - DARK PREMIUM THEME
+   ================================== */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
-}
-body {
-  background: linear-gradient(135deg, #0f172a, #1e293b);
-}
-
-
-
-/* ====== Container ====== */
 .login-container {
   min-height: 100vh;
   display: flex;
+  background: var(--bg-main);
+  flex-direction: row; /* Force form left, image right */
+}
+
+/* ====== Left Form Area ====== */
+.login-form-area {
+  flex: 1;
+  display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  overflow: hidden;
-  padding: 20px;
+  padding: 40px 20px;
+  background: var(--bg-main);
 }
 
-/* ====== Background Circles ====== */
-.background-decoration .circle {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.5;
-}
-
-.circle-1 {
-  width: 300px;
-  height: 300px;
-  background: #6366f1;
-  top: -80px;
-  left: -80px;
-}
-
-.circle-2 {
-  width: 250px;
-  height: 250px;
-  background: #ec4899;
-  bottom: -60px;
-  right: -60px;
-}
-
-.circle-3 {
-  width: 200px;
-  height: 200px;
-  background: #22d3ee;
-  top: 40%;
-  left: 60%;
-}
-
-/* ====== Card ====== */
 .login-card {
   width: 100%;
   max-width: 420px;
-  padding: 40px 30px;
-  border-radius: 20px;
-  backdrop-filter: blur(20px);
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-  color: #fff;
+}
+
+/* ====== Right Hero Area (Laptops) ====== */
+.login-hero-area {
+  flex: 1;
+  display: none; /* hidden on mobile */
+  background: linear-gradient(135deg, var(--bg-main) 0%, rgba(22, 27, 34, 0.8) 100%);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (min-width: 900px) {
+  .login-hero-area {
+    display: flex;
+  }
+}
+
+.hero-text-content {
+  max-width: 480px;
+  margin-top: 30px;
+  z-index: 2;
+}
+
+.hero-text-content h2 {
+  font-size: 28px;
+  color: var(--primary);
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.hero-text-content p {
+  font-size: 16px;
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+.login-hero-image {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  z-index: 2;
+  /* Invert black SVGs to white for the dark theme */
+  filter: invert(1) hue-rotate(180deg) brightness(1.5);
+}
+
+/* Decorative hero circles */
+.hero-circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.1;
+  background: var(--primary);
+}
+.hero-circle-1 {
+  width: 500px;
+  height: 500px;
+  top: -100px;
+  right: -100px;
+}
+.hero-circle-2 {
+  width: 300px;
+  height: 300px;
+  bottom: -50px;
+  left: -50px;
+  background: var(--secondary);
 }
 
 /* ====== Header ====== */
 .login-header {
-  text-align: center;
+  text-align: left;
   margin-bottom: 30px;
 }
 
 .logo-circle {
-  width: 60px;
-  height: 60px;
-  margin: 0 auto 15px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
+  width: 50px;
+  height: 50px;
+  margin-bottom: 15px;
+  border-radius: 12px;
+  background: rgba(99, 102, 241, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .logo-circle svg {
-  width: 28px;
-  color: #fff;
+  width: 24px;
+  color: var(--primary);
 }
 
 .login-header h1 {
-  font-size: 24px;
-  font-weight: 600;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 8px;
 }
 
 .login-header p {
-  font-size: 14px;
-  opacity: 0.8;
+  font-size: 15px;
+  color: var(--text-muted);
 }
 
 /* ====== Form ====== */
@@ -106,14 +134,15 @@ body {
 }
 
 .input-group {
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .input-group label {
-  font-size: 13px;
-  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
   display: block;
-  opacity: 0.85;
+  color: var(--text-main);
 }
 
 .input-wrapper {
@@ -123,53 +152,60 @@ body {
 .input-wrapper input {
   width: 100%;
   padding: 12px 40px;
-  border-radius: 10px;
-  border: none;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
   outline: none;
-  font-size: 14px;
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  transition: 0.3s;
+  font-size: 15px;
+  background: #161B22; /* Pure Glass Grey so it's opaque against black */
+  color: #F0F6FC; /* Clean white text */
+  transition: var(--transition);
 }
 
 .input-wrapper input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-light);
 }
 
 .input-wrapper input:focus {
-  background: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 0 0 2px #a78bfa;
+  background: rgba(22, 27, 34, 0.8);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
 .input-icon {
   position: absolute;
-  left: 12px;
+  left: 14px;
   top: 50%;
   transform: translateY(-50%);
   width: 18px;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-light);
 }
 
 .toggle-password {
   position: absolute;
-  right: 10px;
+  right: 14px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-light);
+  transition: 0.2s;
+}
+
+.toggle-password:hover {
+  color: var(--primary);
 }
 
 /* ====== Forgot Password ====== */
 .forgot-password {
   text-align: right;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .forgot-password a {
-  color: #e0e7ff;
-  font-size: 13px;
+  color: var(--secondary);
+  font-size: 14px;
+  font-weight: 500;
   text-decoration: none;
 }
 
@@ -180,20 +216,21 @@ body {
 /* ====== Buttons ====== */
 .btn-primary {
   width: 100%;
-  padding: 12px;
-  border-radius: 10px;
+  padding: 14px;
+  border-radius: var(--radius-md);
   border: none;
-  font-weight: 500;
-  font-size: 15px;
-  background: linear-gradient(90deg, #6366f1, #9333ea);
-  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  background: var(--primary);
+  color: #FFFFFF;
   cursor: pointer;
-  transition: 0.3s;
+  transition: var(--transition);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 6px 15px rgba(99, 102, 241, 0.4);
+  background: var(--primary-dark);
 }
 
 .btn-primary:disabled {
@@ -203,12 +240,12 @@ body {
 
 /* Spinner */
 .spinner {
-  width: 18px;
-  height: 18px;
-  border: 3px solid #fff;
-  border-top: 3px solid transparent;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid #fff;
   border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+  animation: spin 0.8s linear infinite;
   display: inline-block;
 }
 
@@ -221,9 +258,10 @@ body {
 /* ====== Divider ====== */
 .divider {
   text-align: center;
-  margin: 25px 0;
+  margin: 30px 0;
   font-size: 13px;
-  opacity: 0.8;
+  color: var(--text-light);
+  font-weight: 500;
   position: relative;
 }
 
@@ -233,7 +271,7 @@ body {
   position: absolute;
   width: 40%;
   height: 1px;
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--border-light);
   top: 50%;
 }
 
@@ -248,32 +286,27 @@ body {
 /* ====== Google Button ====== */
 .btn-google {
   width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  background: white;
-  color: #333;
-  font-weight: 500;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  background: #161B22; /* Clean dark surface */
+  color: #F0F6FC; /* Clean white text */
+  font-weight: 600;
+  font-size: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   cursor: pointer;
-  transition: 0.3s;
+  transition: var(--transition);
 }
 
 .btn-google:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  background: rgba(22, 27, 34, 0.9);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-sm);
 }
 
 .google-icon {
-  width: 18px;
-}
-
-/* ====== Responsive ====== */
-@media (max-width: 480px) {
-  .login-card {
-    padding: 30px 20px;
-  }
+  width: 20px;
 }

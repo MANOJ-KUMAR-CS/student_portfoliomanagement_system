@@ -1,0 +1,138 @@
+[{
+  "_id": {
+    "$oid": "6989801e0cfc3aeb2120bbf1"
+  },
+  "st_id": 2,
+  "header": {
+    "name": "ManojKumar CS",
+    "email": "manojkumarcs39@gmail.com",
+    "phone_no": "+91 8124745559",
+    "dept": "ECE",
+    "year": "3rd Year",
+    "sem": "6th",
+    "git_link": "https://github.com/arjun-dev",
+    "linkedin_link": "https://linkedin.com/in/arjun-sharma",
+    "leetcode_link": "https://leetcode.com/arjun_codes"
+  },
+  "objective": "Passionate Full Stack Developer with a strong foundation in MERN stack and problem-solving.",
+  "academic": {
+    "cgpa": 8.8,
+    "sgpas": [
+      8.5,
+      8.7,
+      9,
+      8.6,
+      9.2
+    ],
+    "tenth_percentage": 92,
+    "twelfth_percentage": 89
+  },
+  "skills": [
+    "JavaScript",
+    "Node.js",
+    "Express",
+    "MongoDB",
+    "React",
+    "C++",
+    "Docker"
+  ],
+  "projects": [
+    {
+      "title": "E-Learning Portal",
+      "tech_stack": [
+        "React",
+        "Node.js",
+        "MongoDB"
+      ],
+      "description": "A platform where students can access course materials and track their progress.",
+      "_id": {
+        "$oid": "6989801e0cfc3aeb2120bbf2"
+      }
+    },
+    {
+      "title": "Smart Attendance System",
+      "tech_stack": [
+        "Python",
+        "OpenCV"
+      ],
+      "description": "Face-recognition based attendance system for classrooms.",
+      "_id": {
+        "$oid": "6989801e0cfc3aeb2120bbf3"
+      }
+    }
+  ],
+  "certifications": [
+    "Meta Front-End Developer Professional Certificate",
+    "Google Cloud Digital Leader"
+  ],
+  "achievements": [
+    "Ranked top 5% in Smart India Hackathon 2025",
+    "Solved 500+ LeetCode problems"
+  ],
+  "hobbies": [
+    "Open Source Contribution",
+    "Photography",
+    "Badminton"
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "698d675d7d68f839d3a67125"
+  },
+  "st_id": 3,
+  "header": {
+    "name": "MANOJKUMAR CS",
+    "email": "mnojkumar.ec23@bitsathy.ac.in",
+    "phone_no": "+91 8124745559",
+    "dept": "ECE",
+    "year": "3rd Year",
+    "sem": "6th",
+    "git_link": "https://github.com/arjun-dev",
+    "linkedin_link": "https://linkedin.com/in/arjun-sharma",
+    "leetcode_link": "https://leetcode.com/arjun_codes"
+  },
+  "objective": "i am from ece",
+  "academic": {
+    "cgpa": 8.37,
+    "sgpas": [
+      7.9,
+      8.4,
+      8.78,
+      8.04,
+      8.76
+    ],
+    "tenth_percentage": 100,
+    "twelfth_percentage": 90
+  },
+  "skills": [
+    "Java",
+    "React",
+    ""
+  ],
+  "projects": [
+    {
+      "title": "fwaefA",
+      "tech_stack": [
+        "React",
+        "Node.js",
+        "MongoDB"
+      ],
+      "description": "cefcAWEQFCEWFAWSEfefff",
+      "_id": {
+        "$oid": "698d675d7d68f839d3a67126"
+      }
+    }
+  ],
+  "certifications": [
+    "iot"
+  ],
+  "achievements": [
+    "winner in a hackathon",
+    "Participated in paper presentation"
+  ],
+  "hobbies": [
+    "music"
+  ],
+  "__v": 0
+}]

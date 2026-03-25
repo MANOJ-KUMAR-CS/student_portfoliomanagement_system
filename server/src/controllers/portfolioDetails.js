@@ -10,13 +10,11 @@ const portfolioDetails = async (req, res) => {
     //find the specific user
     const userData = await User.findOne({ st_id: req.query.id });
 
-    //verify if user is found or not
-    if (!userData) {
-        return res.status(404).json({ message: "Student data not found" });
-    }
-
-    // return users details if found
-    return res.status(200).json({ message: "Student details found", data: userData });
+    // 200 with null data is cleaner than a 404 for "no portfolio yet"
+    return res.status(200).json({ 
+        message: userData ? "Student details found" : "Student data not found", 
+        data: userData || null 
+    });
   } 
   
   // catch if any error occurred

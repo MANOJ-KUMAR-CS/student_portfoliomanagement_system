@@ -10,11 +10,21 @@ const cors = require('cors');
 require('dotenv').config();
 const app=express();
 
+// 1. CORS - MUST BE FIRST to handle preflight requests (OPTIONS)
+app.use(cors({
+  origin: process.env.FRONTEND_URL || '*', // Allow frontend URL from .env, or fallback to all
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  optionsSuccessStatus: 200 // Some legacy browsers choke on 204
+}));
 
+
+
+// 3. Body parsing
 app.use(express.json());
-app.use(cors())
 
-const PORT= process.env.PORT;
+const PORT = process.env.PORT || 5001;
 
 
 
@@ -23,7 +33,6 @@ app.use('/student', portfolioRoutes);
 app.use('/admin' , adminRoutes);
 
 app.listen(PORT , ()=>{
-    
-    console.log(`Server is running in Port number : ${PORT}`);
-
+  console.log(`Server is running on port: ${PORT}`);
+  console.log(`Diagnostic: If you see 'Incoming request' logs above, the server is receiving traffic.`);
 })

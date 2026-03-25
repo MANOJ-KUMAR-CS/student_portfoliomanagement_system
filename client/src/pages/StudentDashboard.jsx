@@ -58,11 +58,11 @@ const StudentDashboard = () => {
                </div>
             </div>
 
-            <div className="contact-bar" style={{marginTop: '20px', marginLeft: '100px'}}>
+            <div className="contact-bar profile-indent" style={{marginTop: '20px'}}>
               <span>📧 {portfolio.header.email}</span>
               <span>📞 {portfolio.header.phone_no}</span>
             </div>
-            <div className="link-badges" style={{marginLeft: '100px'}}>
+            <div className="link-badges profile-indent">
               {portfolio.header.git_link && <a href={portfolio.header.git_link} target="_blank" rel="noreferrer" className="link-tag"><span>🐙</span> GitHub</a>}
               {portfolio.header.linkedin_link && <a href={portfolio.header.linkedin_link} target="_blank" rel="noreferrer" className="link-tag"><span>💼</span> LinkedIn</a>}
               {portfolio.header.leetcode_link && <a href={portfolio.header.leetcode_link} target="_blank" rel="noreferrer" className="link-tag"><span>💻</span> LeetCode</a>}

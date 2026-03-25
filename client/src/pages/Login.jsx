@@ -40,6 +40,7 @@ const LoginPage = () => {
         const { token, userdata } = response.data;
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(userdata));
+        localStorage.removeItem("portfolio_data"); // Clear stale portfolio data from previous sessions
 
         // 2. Route Admin immediately
         if (userdata.role === "admin") {
@@ -77,6 +78,7 @@ const LoginPage = () => {
         }
       }
     } catch (error) {
+      console.error("Login process error:", error);
       const errorMessage = error.response?.data?.message || "Login failed.";
       showAlert(errorMessage, "error");
     } finally {
@@ -86,12 +88,6 @@ const LoginPage = () => {
 
   return (
     <div className="login-container">
-      <div className="background-decoration">
-        <div className="circle circle-1"></div>
-        <div className="circle circle-2"></div>
-        <div className="circle circle-3"></div>
-      </div>
-
       {alertConfig.show && (
         <Alert
           message={alertConfig.message}
@@ -100,7 +96,9 @@ const LoginPage = () => {
         />
       )}
 
-      <div className="login-card">
+      {/* Left Form Side */}
+      <div className="login-form-area">
+        <div className="login-card">
         <div className="login-header">
           <div className="logo-circle">
             <svg
@@ -253,6 +251,22 @@ const LoginPage = () => {
           </svg>
           Sign in with Google
         </button>
+        </div>
+      </div>
+
+      {/* Right Hero Side (Hidden on Mobile) */}
+      <div className="login-hero-area">
+        <div className="hero-circle hero-circle-1"></div>
+        <div className="hero-circle hero-circle-2"></div>
+        <img 
+          src="https://illustrations.popsy.co/amber/student-going-to-school.svg" 
+          alt="Student preparing for placement" 
+          className="login-hero-image"
+        />
+        <div className="hero-text-content">
+          <h2>Accelerate Your Career Journey</h2>
+          <p>Create a standout professional portfolio, streamline your placement cell interactions, and unlock your next big career opportunity today.</p>
+        </div>
       </div>
     </div>
   );

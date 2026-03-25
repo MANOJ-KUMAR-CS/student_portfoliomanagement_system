@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import Alert from '../components/Alert';
 import '../styles/ForgetPassword.css';
 
@@ -24,7 +24,7 @@ const ForgotPassword = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/user/generateopt', { email });
+      const response = await api.post('/user/generateopt', { email });
       showAlert(response.data.message, 'success');
       setStep(2);
     } catch (err) {
@@ -42,7 +42,7 @@ const ForgotPassword = () => {
     setLoading(true);
     try {
       // Replace with your actual OTP verification endpoint
-      const response = await axios.post('http://localhost:5000/user/verifyotp', { email, otp });
+      const response = await api.post('/user/verifyotp', { email, otp });
       
       // Store the token sent from backend
       setResetToken(response.data.token); 
@@ -69,7 +69,7 @@ const ForgotPassword = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/user/resetpassword', 
+      const response = await api.post('/user/resetpassword', 
         { email,
           newPassword // Send new password in body
         }, 

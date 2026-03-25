@@ -26,12 +26,15 @@ const createPortfolio = async (req, res) => {
     });
   } 
 
-  // catch if any error occurred
   catch (err) {
+    if (err.name === 'ValidationError') {
+      const messages = Object.values(err.errors).map(val => val.message);
+      return res.status(400).json({ message: "Validation Failed: " + messages.join(', ') });
+    }
     return res.status(500).json({
         message: "Internal Server Error",
         error: err.message
-    })
+    });
   }
 };
 
